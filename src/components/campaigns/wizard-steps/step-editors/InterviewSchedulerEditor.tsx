@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { CampaignStep, CalendarProvider } from '../../../../types/campaign';
+import { CampaignStep, CalendarProvider, StepCondition, CandidateStatus } from '../../../../types/campaign';
 import { Calendar, Clock, Info, AlertCircle, CheckCircle2, MessageSquare } from 'lucide-react';
 import { settingsService } from '../../../../services/settingsService';
+import { ConditionsEditor } from './ConditionsEditor';
 
 interface InterviewSchedulerEditorProps {
   step: CampaignStep;
@@ -13,6 +14,17 @@ interface CalendarStatus {
   microsoft: boolean;
 }
 
+const statusOptions = [
+  { value: 'new', label: 'Nuevo' },
+  { value: 'form_submitted', label: 'Formulario enviado' },
+  { value: 'under_review', label: 'En revisión' },
+  { value: 'interview_scheduled', label: 'Entrevista programada' },
+  { value: 'interview_completed', label: 'Entrevista completada' },
+  { value: 'selected', label: 'Seleccionado' },
+  { value: 'rejected', label: 'Rechazado' },
+  { value: 'withdrawn', label: 'Retirado' }
+];
+
 const VARIABLES = [
   { key: '{{firstName}}', description: 'Nombre del candidato' },
   { key: '{{position}}', description: 'Título de la posición' },
@@ -20,6 +32,7 @@ const VARIABLES = [
   { key: '{{recruiterName}}', description: 'Tu nombre' },
   { key: '{{schedulingLink}}', description: 'Link para agendar' },
 ];
+
 
 const DEFAULT_MESSAGE = `¡Hola {{firstName}}! 👋
 
@@ -312,4 +325,5 @@ export function InterviewSchedulerEditor({ step, onSave }: InterviewSchedulerEdi
     </div>
   );
 }
+
 

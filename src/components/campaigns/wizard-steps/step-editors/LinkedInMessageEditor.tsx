@@ -15,9 +15,20 @@ const VARIABLES = [
   { key: '{{recruiterName}}', description: 'Tu nombre' },
 ];
 
+const DEFAULT_MESSAGE = `¡Hola {{firstName}}! 👋
+
+Me pongo en contacto contigo porque estamos buscando un {{position}} para {{company}} y tu perfil me ha parecido muy interesante.
+
+Me gustaría invitarte a participar en nuestro proceso de selección. Puedes encontrar todos los detalles de la posición y aplicar directamente a través de este enlace: {{formLink}}
+
+Si tienes alguna pregunta, no dudes en consultarme.
+
+¡Saludos!
+{{recruiterName}}`;
+
 export function LinkedInMessageEditor({ step, onSave }: LinkedInMessageEditorProps) {
-  const [message, setMessage] = useState(step.config.message || '');
-  const [delay, setDelay] = useState(step.config.delay || 1);
+  const [message, setMessage] = useState(step.config?.message || DEFAULT_MESSAGE);
+  const [delay, setDelay] = useState(step.config?.delay || 1);
 
   const handleSave = () => {
     onSave({
@@ -119,3 +130,4 @@ export function LinkedInMessageEditor({ step, onSave }: LinkedInMessageEditorPro
     </div>
   );
 }
+

@@ -1,0 +1,114 @@
+import React from 'react';
+import { Calendar, Clock } from 'lucide-react';
+import { CalendarProvider } from '../../../../../types/campaign';
+
+interface CalendarConfigSectionProps {
+  config: {
+    provider: CalendarProvider;
+    daysAvailable: number;
+    workingHours: {
+      start: string;
+      end: string;
+    };
+    duration: number;
+  };
+  calendarStatus: {
+    google: boolean;
+    microsoft: boolean;
+  };
+  onConfigChange: (config: CalendarConfigSectionProps['config']) => void;
+  onProviderChange: (provider: CalendarProvider) => void;
+}
+
+export function CalendarConfigSection({ 
+  config, 
+  calendarStatus, 
+  onConfigChange, 
+  onProviderChange 
+}: CalendarConfigSectionProps) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          <Calendar className="w-4 h-4 inline-block mr-1" />
+          Días disponibles para agendar
+        </label>
+        <div className="flex items-center space-x-2">
+          <input
+            type="number"
+            min="1"
+            max="30"
+            value={config.daysAvailable}
+            onChange={(e) => onConfigChange({
+              ...config,
+              daysAvailable: Number(e.target.value)
+            })}
+            className="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <span className="text-sm text-gray-500">días siguientes</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            <Clock className="w-4 h-4 inline-block mr-1" />
+            Hora de inicio
+          </label>
+          <input
+            type="time"
+            value={config.workingHours.start}
+            onChange={(e) => onConfigChange({
+              ...config,
+              workingHours: {
+                ...config.workingHours,
+                start: e.target.value
+              }
+            })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            <Clock className="w-4 h-4 inline-block mr-1" />
+            Hora de fin
+          </label>
+          <input
+            type="time"
+            value={config.workingHours.end}
+            onChange={(e) => onConfigChange({
+              ...config,
+              workingHours: {
+                ...config.workingHours,
+                end: e.target.value
+              }
+            })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          <Clock className="w-4 h-4 inline-block mr-1" />
+          Duración de la entrevista
+        </label>
+        <div className="flex items-center space-x-2">
+          <input
+            type="number"
+            min="15"
+            max="180"
+            step="15"
+            value={config.duration}
+            onChange={(e) => onConfigChange({
+              ...config,
+              duration: Number(e.target.value)
+            })}
+            className="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <span className="text-sm text-gray-500">minutos</span>
+        </div>
+      </div>
+    </div>
+  );
+}
