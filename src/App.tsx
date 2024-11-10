@@ -12,6 +12,10 @@ import { Interviews } from './components/interviews/Interviews';
 import { Settings } from './components/settings/Settings';
 import { SettingsLayout } from './components/settings/SettingsLayout';
 import { AccountsSettings } from './components/settings/AccountsSettings';
+import { ProfileSettings } from './components/settings/ProfileSettings';
+import { CalendarSettings } from './components/settings/CalendarSettings';
+import { NotificationsSettings } from './components/settings/NotificationsSettings';
+
 import { Login } from './components/Login';
 import { PublicPage } from './components/public/PublicPage';
 import { Campaigns } from './components/campaigns/Campaigns';
@@ -82,4 +86,5 @@ function App() {
 }
 
 export default App;
+
 
