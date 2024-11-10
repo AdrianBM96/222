@@ -19,8 +19,8 @@ export function CampaignDetailsModal({ campaign, onClose }: CampaignDetailsModal
     description: campaign.description,
     status: campaign.status,
   });
-  const [form, setForm] = useState(campaign.form);
-  const [messages, setMessages] = useState(campaign.messages);
+  const [form, setForm] = useState(campaign.form || { sections: [], aiSuggestions: [] });
+  const [messages, setMessages] = useState(campaign.messages || []);
 
   const handleUpdateCampaign = async () => {
     setIsUpdating(true);
@@ -74,17 +74,6 @@ export function CampaignDetailsModal({ campaign, onClose }: CampaignDetailsModal
                 className="input-field"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Descripción
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="input-field"
-                rows={3}
-              />
-            </div>
             <div className="bg-gray-50 rounded-lg p-4">
               <h4 className="text-sm font-medium text-gray-900 mb-2">Métricas de la campaña</h4>
               <div className="grid grid-cols-4 gap-4">
@@ -112,7 +101,7 @@ export function CampaignDetailsModal({ campaign, onClose }: CampaignDetailsModal
       case 'messages':
         return (
           <div className="space-y-4">
-            {messages.map((message) => (
+            {messages?.map((message) => (
               <div key={message.id} className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   {message.type === 'initial' ? 'Mensaje inicial' : 'Mensaje de seguimiento'}
@@ -133,8 +122,8 @@ export function CampaignDetailsModal({ campaign, onClose }: CampaignDetailsModal
       case 'form':
         return (
           <FormEditor
-            sections={form.sections}
-            aiSuggestions={form.aiSuggestions}
+            sections={form?.sections || []}
+            aiSuggestions={form?.aiSuggestions || []}
             onChange={(sections) => setForm({ ...form, sections })}
           />
         );

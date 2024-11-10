@@ -18,11 +18,18 @@ interface BasicInfoStepProps {
 
 export function BasicInfoStep({ formData, onFormDataChange, onNext }: BasicInfoStepProps) {
   const [candidatures, setCandidatures] = useState<Candidature[]>([]);
+  const [candidates, setCandidates] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchCandidatures();
   }, []);
+
+  useEffect(() => {
+    if (formData.candidatureId && !formData.sendToAllCandidates) {
+      fetchCandidatesForCandidature(formData.candidatureId);
+    }
+  }, [formData.candidatureId, formData.sendToAllCandidates]);
 
   const fetchCandidatures = async () => {
     setLoading(true);
@@ -41,20 +48,50 @@ export function BasicInfoStep({ formData, onFormDataChange, onNext }: BasicInfoS
     }
   };
 
+  const fetchCandidatesForCandidature = async (candidatureId: string) => {
+    try {
+      const candidatesCollection = collection(db, 'candidates');
+      const candidatesSnapshot = await getDocs(candidatesCollection);
+      const candidatesList = candidatesSnapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        .filter(candidate => candidate.candidatureId === candidatureId);
+      setCandidates(candidatesList);
+    } catch (error) {
+      console.error('Error fetching candidates:', error);
+    }
+  };
+
   const handleCandidatureChange = (candidatureId: string) => {
     const selectedCandidature = candidatures.find(c => c.id === candidatureId);
     if (selectedCandidature) {
       const currentDate = new Date().toLocaleDateString('es-ES');
-      const autoName = `${selectedCandidature.title} - ${selectedCandidature.department} - ${currentDate}`;
+      const departmentName = selectedCandidature.department?.name || 'Sin departamento';
+      const autoName = `${selectedCandidature.title} - ${departmentName} - ${currentDate}`;
       onFormDataChange({ 
         ...formData, 
         candidatureId,
-        name: autoName
+        name: autoName,
+        selectedCandidates: []
       });
     }
   };
 
-  const isValid = formData.name && formData.candidatureId && formData.endDate;
+  const handleCandidateSelection = (candidateId: string) => {
+    const newSelectedCandidates = formData.selectedCandidates?.includes(candidateId)
+      ? formData.selectedCandidates.filter(id => id !== candidateId)
+      : [...(formData.selectedCandidates || []), candidateId];
+    
+    onFormDataChange({
+      ...formData,
+      selectedCandidates: newSelectedCandidates
+    });
+  };
+
+  const isValid = formData.name && formData.candidatureId && formData.endDate && 
+    (formData.sendToAllCandidates || (formData.selectedCandidates && formData.selectedCandidates.length > 0));
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
@@ -82,7 +119,7 @@ export function BasicInfoStep({ formData, onFormDataChange, onNext }: BasicInfoS
             <option value="">Selecciona una candidatura</option>
             {candidatures.map(candidature => (
               <option key={candidature.id} value={candidature.id}>
-                {candidature.title}
+                {candidature.title} - {candidature.department?.name || 'Sin departamento'}
               </option>
             ))}
           </select>
@@ -140,6 +177,30 @@ export function BasicInfoStep({ formData, onFormDataChange, onNext }: BasicInfoS
               />
               <span>Seleccionar candidatos específicos</span>
             </label>
+
+            {!formData.sendToAllCandidates && formData.candidatureId && (
+              <div className="mt-4 border rounded-lg divide-y">
+                {candidates.map(candidate => (
+                  <label key={candidate.id} className="flex items-center p-3 hover:bg-gray-50 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.selectedCandidates?.includes(candidate.id)}
+                      onChange={() => handleCandidateSelection(candidate.id)}
+                      className="mr-3"
+                    />
+                    <div>
+                      <div className="font-medium">{candidate.name}</div>
+                      <div className="text-sm text-gray-500">{candidate.email}</div>
+                    </div>
+                  </label>
+                ))}
+                {candidates.length === 0 && (
+                  <div className="p-4 text-center text-gray-500">
+                    No hay candidatos disponibles para esta candidatura
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
